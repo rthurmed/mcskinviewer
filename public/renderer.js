@@ -1,11 +1,16 @@
+const LS_KEY_SKIN = 'mcskinviewer_skin'
+
 const skinPathInput = document.getElementById('skin_path_input')
 const skinContainer = document.getElementById('skin_container')
+
+let defaultSkin = localStorage.getItem(LS_KEY_SKIN)
+if (defaultSkin == null) { defaultSkin = 'img/steve.png' }
 
 const skinViewer = new skinview3d.SkinViewer({
   canvas: skinContainer,
   width: window.innerWidth,
   height: window.innerHeight,
-  skin: 'img/steve.png',
+  skin: defaultSkin,
   panorama: 'img/panorama.png'
 })
 
@@ -22,8 +27,17 @@ window.onresize = (ev) => {
   skinViewer.height = innerHeight
 }
 
-skinPathInput.onchange = (ev) => (skinViewer.loadSkin(ev.target.value))
+skinPathInput.onchange = (ev) => (loadSkin(ev.target.value))
 
-setInterval(() => {
-  skinViewer.loadSkin(skinPathInput.value)
-}, 500)
+loadSkin = (skin = '') => {
+  if (typeof skin !== 'string') { return }
+  
+  let value = skin
+  if (value) {
+    localStorage.setItem(LS_KEY_SKIN, value)
+  } else {
+    value = localStorage.getItem(LS_KEY_SKIN)
+  }
+
+  skinViewer.loadSkin(value)
+}
